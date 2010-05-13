@@ -1,0 +1,14 @@
+Source: trss
+Section: gnome
+Priority: extra
+Maintainer: Mario Colque <mario@tuquito.org.ar>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.8.1
+Homepage: http://paquetes.tuquito.org.ar
+
+Package: trss
+Architecture: all
+Depends: python-feedparser (>= 4.0), python (>> 2.3.7), python-gtk2 (>= 2.0), python-notify (>= 0.1.1), python-pygame (>= 1.8.1)
+Description: Lector de RSS de Tuquito
+ Tuquito RSS es un notificador de eventos en los sitios oficiales de Tuquito, pequeño y ligero para el Escritorio de GNOME. Totalmente configurable y con posibilidad de agregar nuevas fuentes RSS.
+ * Tuquito Team! - 2010

@@ -1,0 +1,18 @@
+[Desktop Entry]
+Name=Preferencias de Tuquito RSS
+Name[en]=Preferencias de Tuquito RSS
+Name[fr]=Preferencias de Tuquito RSS
+Name[it]=Preferencias de Tuquito RSS
+Name[pt]=Preferencias de Tuquito RSS
+Name[pt_BR]=Preferencias de Tuquito RSS
+Comment=Notificador de eventos en los sitios oficiales de Tuquito GNU/Linux
+Comment[en]=Notificador de eventos en los sitios oficiales de Tuquito GNU/Linux
+Comment[fr]=Notificador de eventos en los sitios oficiales de Tuquito GNU/Linux
+Comment[it]=Notificador de eventos en los sitios oficiales de Tuquito GNU/Linux
+Comment[pt]=Notificador de eventos en los sitios oficiales de Tuquito GNU/Linux
+Comment[pt_BR]=Notificador de eventos en los sitios oficiales de Tuquito GNU/Linux
+Type=Application
+Exec=/usr/lib/tuquito/trss/trss-pref.py
+Icon=/usr/lib/tuquito/trss/trss.png
+Terminal=false
+Categories=GNOME;GTK;Settings;
