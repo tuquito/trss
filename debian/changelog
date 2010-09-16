@@ -1,3 +1,9 @@
+trss (1.2-3) maverick; urgency=low
+
+  * rebranded to maverick
+
+ -- Mario Colque <mario@tuquito.org.ar>  Thu, 16 Sep 2010 13:24:54 -0300
+
 trss (1.2-2) lucid; urgency=low
 
   * Mejoras en la interfaz de usuario
