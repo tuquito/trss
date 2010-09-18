@@ -9,4 +9,4 @@ Type=Application
 Exec=/usr/lib/tuquito/trss/trss-pref.py
 Icon=/usr/lib/tuquito/trss/trss.png
 Terminal=false
-Categories=GNOME;GTK;Settings;
+Categories=Settings;
