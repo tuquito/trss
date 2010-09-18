@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
- Tuquito RSS 1.3-2
+ Tuquito RSS 1.3
  Copyright (C) 2010
  Author: Mario Colque <mario@tuquito.org.ar>
  Tuquito Team! - www.tuquito.org.ar
@@ -180,6 +180,10 @@ class Trss(threading.Thread):
 									link = tit[1]
 									notify(fon, text)
 									insertLink(fon, text, link)
+						else:
+							gtk.gdk.threads_enter()
+							self.staticon.set_tooltip(_('Connected'))
+							gtk.gdk.threads_leave()
 			autoRefresh = AutomaticRefreshThread(self.glade)
 			autoRefresh.start()
 		if flagC:

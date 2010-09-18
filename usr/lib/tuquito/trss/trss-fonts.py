@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
- Tuquito RSS 1.3-1
+ Tuquito RSS 1.3
  Copyright (C) 2010
  Author: Mario Colque <mario@tuquito.org.ar>
  Tuquito Team! - www.tuquito.org.ar
@@ -98,4 +98,3 @@ class Fonts:
 if __name__ == '__main__':
 	win = Fonts()
 	gtk.main()
-
