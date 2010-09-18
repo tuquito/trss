@@ -1,0 +1,2 @@
+#!/bin/bash
+xgettext --language=Python --keyword=_ --output=po/trss.pot usr/lib/tuquito/trss/trss.py usr/lib/tuquito/trss/trss-fonts.py usr/lib/tuquito/trss/trss-pref.py

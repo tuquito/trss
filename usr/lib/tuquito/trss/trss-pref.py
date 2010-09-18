@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
- Tuquito RSS 1.2
+ Tuquito RSS 1.3-2
  Copyright (C) 2010
  Author: Mario Colque <mario@tuquito.org.ar>
  Tuquito Team! - www.tuquito.org.ar
@@ -20,8 +20,7 @@
 """
 
 import ConfigParser
-import gtk, pygtk, pygame
-pygtk.require('2.0')
+import gtk, pygame
 import os, pynotify, gettext, gobject
 
 # i18n
@@ -45,12 +44,9 @@ class Preferencias:
 		f = open(configFile, 'w')
 		line.append('[Desktop Entry]\n')
 		line.append('Name=Tuquito RSS\n')
-		line.append('Comment=Notificador de eventos en los sitios oficiales de Tuquito GNU/Linux\n')
-		line.append('Comment[en]=Notificador de eventos en los sitios oficiales de Tuquito GNU/Linux\n')
-		line.append('Comment[fr]=Notificador de eventos en los sitios oficiales de Tuquito GNU/Linux\n')
-		line.append('Comment[it]=Notificador de eventos en los sitios oficiales de Tuquito GNU/Linux\n')
+		line.append('Comment=Notifier official Tuquito sites\n')
+		line.append('Comment[en]=Notificador de los sitios oficiales de Tuquito\n')
 		line.append('Comment[pt]=Notificador de eventos en los sitios oficiales de Tuquito GNU/Linux\n')
-		line.append('Comment[pt_BR]=Notificador de eventos en los sitios oficiales de Tuquito GNU/Linux\n')
 		line.append('Type=Application\n')
 		line.append('Exec=trss\n')
 		line.append('Icon=/usr/lib/tuquito/trss/trss.png\n')
@@ -65,66 +61,20 @@ class Preferencias:
 
 	def saveExit(self, widget, data=None):
 		self.verificaStart()
-
-		if self.blog:
-			self.blog = 'YES'
-		else:
-			self.blog = 'NO'
-
-		if self.foros:
-			self.foros = 'YES'
-		else:
-			self.foros = 'NO'
-
-		if self.videos:
-			self.videos = 'YES'
-		else:
-			self.videos = 'NO'
-
-		if self.social:
-			self.social = 'YES'
-		else:
-			self.social = 'NO'
-
-		if self.twitter:
-			self.twitter = 'YES'
-		else:
-			self.twitter = 'NO'
-
-		if self.identica:
-			self.identica = 'YES'
-		else:
-			self.identica = 'NO'
-
-		if self.startup:
-			self.startupVal = 'YES'
-		else:
-			self.startupVal = 'NO'
-
-		if self.traybar:
-			self.traybarVal = 'YES'
-		else:
-			self.traybarVal = 'NO'
-
-		if self.sound:
-			self.soundVal = 'YES'
-		else:
-			self.soundVal = 'NO'
-
 		if self.universo:
-			self.blog = 'NO'
-			self.foros = 'NO'
-			self.videos = 'NO'
-			self.social = 'NO'
-			self.identica = 'NO'
-			self.twitter = 'NO'
-			self.universo = 'YES'
+			self.blog = False
+			self.foros = False
+			self.videos = False
+			self.social = False
+			self.identica = False
+			self.twitter = False
+			self.universo = True
 		else:
-			self.universo = 'NO'
-			
+			self.universo = False
+
 		self.waitVal = self.spinner.get_value_as_int()
 		self.saveConfig(self)
-		self.notify(_('Sus configuraciones se guardaron correctamente') + '\n' + _('Debe reiniciar su sesion para que se efectuen los cambios'))
+		self.notify(_('Your settings are saved correctly.\nYou must restart your session to ensure that changes are made'))
 		gtk.main_quit()
 
 	def initialConfig(self):
@@ -132,16 +82,16 @@ class Preferencias:
 			os.mkdir(self.path)
 		config = ConfigParser.ConfigParser()
 		config.add_section("User settings")
-		config.set("User settings", "blog", 'YES')
-		config.set("User settings", "foros", 'YES')
-		config.set("User settings", "videos", 'NO')
-		config.set("User settings", "social", 'YES')
-		config.set("User settings", "twitter", 'NO')
-		config.set("User settings", "identica", 'YES')
-		config.set("User settings", "universo", 'NO')
-		config.set("User settings", "startup", 'YES')
-		config.set("User settings", "traybar", 'YES')
-		config.set("User settings", "sound", 'YES')
+		config.set("User settings", "blog", True)
+		config.set("User settings", "foros", True)
+		config.set("User settings", "videos", False)
+		config.set("User settings", "social", True)
+		config.set("User settings", "twitter", True)
+		config.set("User settings", "identica", False)
+		config.set("User settings", "universo", False)
+		config.set("User settings", "startup", True)
+		config.set("User settings", "traybar", True)
+		config.set("User settings", "sound", True)
 		config.set("User settings", "browser", 'default')
 		config.set("User settings", "wait", 5)
 		config.write(open(self.configfile, 'w'))
@@ -162,9 +112,9 @@ class Preferencias:
 		config.set("User settings", "identica", self.identica)
 		config.set("User settings", "twitter", self.twitter)
 		config.set("User settings", "universo", self.universo)
-		config.set("User settings", "startup", self.startupVal)
-		config.set("User settings", "traybar", self.traybarVal)
-		config.set("User settings", "sound", self.soundVal)
+		config.set("User settings", "startup", self.startup)
+		config.set("User settings", "traybar", self.traybar)
+		config.set("User settings", "sound", self.sound)
 		config.set("User settings", "browser", self.browser)
 		config.set("User settings", "wait", self.waitVal)
 		config.write(open(self.configfile, 'w'))
@@ -173,70 +123,19 @@ class Preferencias:
 		try:
 			config = ConfigParser.ConfigParser()
 			config.read(self.configfile)
-			followBlog = config.get("User settings", "blog")
-			followForos = config.get("User settings", "foros")
-			followVideos = config.get("User settings", "videos")
-			followSocial = config.get("User settings", "social")
-			followIdentica = config.get("User settings", "identica")
-			followTwitter = config.get("User settings", "twitter")
-			followUniverso = config.get("User settings", "universo")
-			startupVal = config.get("User settings", "startup")
-			traybarVal = config.get("User settings", "traybar")
-			soundVal = config.get("User settings", "sound")
+			self.blog = config.getboolean("User settings", "blog")
+			self.foros = config.getboolean("User settings", "foros")
+			self.videos = config.getboolean("User settings", "videos")
+			self.social = config.getboolean("User settings", "social")
+			self.identica = config.getboolean("User settings", "identica")
+			self.twitter = config.getboolean("User settings", "twitter")
+			self.universo = config.getboolean("User settings", "universo")
+			self.startup = config.getboolean("User settings", "startup")
+			self.traybar = config.getboolean("User settings", "traybar")
+			self.sound = config.getboolean("User settings", "sound")
 			browser = config.get("User settings", "browser")
 			self.wait = config.get("User settings", "wait")
 			self.browser = browser.strip()
-
-			if followBlog == 'YES':
-				self.blog = True
-			elif followBlog == 'NO':
-				self.blog = False
-
-			if followForos == 'YES':
-				self.foros = True
-			elif followForos == 'NO':
-				self.foros = False
-
-			if followVideos == 'YES':
-				self.videos = True
-			elif followVideos == 'NO':
-				self.videos = False
-
-			if followSocial == 'YES':
-				self.social = True
-			elif followSocial == 'NO':
-				self.social = False
-
-			if followIdentica == 'YES':
-				self.identica = True
-			elif followIdentica == 'NO':
-				self.identica = False
-
-			if followTwitter == 'YES':
-				self.twitter = True
-			elif followTwitter == 'NO':
-				self.twitter = False
-
-			if followUniverso == 'YES':
-				self.universo = True
-			elif followUniverso == 'NO':
-				self.universo = False
-
-			if startupVal == 'YES':
-				self.startup = True
-			elif startupVal == 'NO':
-				self.startup = False
-
-			if traybarVal == 'YES':
-				self.traybar = True
-			elif traybarVal == 'NO':
-				self.traybar = False
-
-			if soundVal == 'YES':
-				self.sound = True
-			elif soundVal == 'NO':
-				self.sound = False
-
 			self.searchBrowser(self, browser)
 		except:
 			self.initialConfig()
@@ -286,8 +185,8 @@ class Preferencias:
 		self.combobox.set_active(j)
 
 	def __init__(self):
-		self.path = home + '/.trss/'
-		self.configfile = self.path + 'config'
+		self.path = os.path.join(home, '.tuquito/trss')
+		self.configfile = os.path.join(self.path, 'config')
 		self.blog = False
 		self.foros = False
 		self.videos = False
@@ -311,76 +210,76 @@ class Preferencias:
 		self.adj.configure(float(self.wait), 1.0, 60.0, 1.0, 10.0, 0.0)
 		self.spinner = self.glade.get_object('minutos')
 
-		self.window.set_title(_('Preferencias'))
-		self.glade.get_object('sitios').set_label('<b>' + _('Sitios a seguir') + '</b>')
-		self.glade.get_object('comporta').set_label('<b>' + _('Comportamiento') + '</b>')
-		self.glade.get_object('tiempo').set_label('<b>' + _('Tiempo de refresco') + '</b>')
-		self.glade.get_object('navegador').set_label('<b>' + _('Seleccionar navegadores') + '</b>')
+		self.window.set_title(_('Preferences'))
+		self.glade.get_object('sitios').set_label('<b>' + _('Places to go') + '</b>')
+		self.glade.get_object('comporta').set_label('<b>' + _('Behavior') + '</b>')
+		self.glade.get_object('tiempo').set_label('<b>' + _('Refresh') + '</b>')
+		self.glade.get_object('navegador').set_label('<b>' + _('Select browser') + '</b>')
 
 		self.glade.get_object('blog').set_active(self.blog)
-		self.glade.get_object('blog').set_label(_('Blog Tuquito'))
+		self.glade.get_object('blog').set_label(_('Tuquito Blog'))
 		self.glade.get_object('foros').set_active(self.foros)
-		self.glade.get_object('foros').set_label(_('Foros Tuquito'))
+		self.glade.get_object('foros').set_label(_('Tuquito Forums'))
 		self.glade.get_object('videos').set_active(self.videos)
-		self.glade.get_object('videos').set_label(_('Videos Tuquito'))
+		self.glade.get_object('videos').set_label(_('Tuquito Videos'))
 		self.glade.get_object('social').set_active(self.social)
-		self.glade.get_object('social').set_label(_('Tuquito Social'))
+		self.glade.get_object('social').set_label(_('Social Tuquito'))
 		self.glade.get_object('identica').set_active(self.identica)
-		self.glade.get_object('identica').set_label(_('Identi.ca Tuquito'))
+		self.glade.get_object('identica').set_label(_('Tuquito Identi.ca'))
 		self.glade.get_object('twitter').set_active(self.twitter)
-		self.glade.get_object('twitter').set_label(_('Twitter Tuquito'))
+		self.glade.get_object('twitter').set_label(_('Tuquito Twitter'))
 		self.glade.get_object('universo').set_active(self.universo)
-		self.glade.get_object('universo').set_label(_('Solo Universo Tuquito (deshabilita los demas)'))
+		self.glade.get_object('universo').set_label(_('Only Tuquito Universe (disable other)'))
 		self.glade.get_object('inicio').set_active(self.startup)
-		self.glade.get_object('inicio').set_label(_('Inicio automatico'))
+		self.glade.get_object('inicio').set_label(_('Automatic start'))
 		self.glade.get_object('icono').set_active(self.traybar)
-		self.glade.get_object('icono').set_label(_('Mostrar icono en el panel'))
+		self.glade.get_object('icono').set_label(_('Show icon on the panel'))
 		self.glade.get_object('sonido').set_active(self.sound)
-		self.glade.get_object('sonido').set_label(_('Reproducir sonido de aviso'))
-		
-		self.glade.get_object('min').set_label(_('(minutos)'))
+		self.glade.get_object('sonido').set_label(_('Play sound alert'))
+
+		self.glade.get_object('min').set_label(_('(minutes)'))
 
 		self.glade.connect_signals(self)
 		self.window.show()
-		
+
 	def quit(self, widget, data=None):
 		gtk.main_quit()
 		return True
 
 	def togBlog(self, widget, data=None ):
 		self.blog = widget.get_active()
-		
+
 	def togForos(self, widget, data=None ):
 		self.foros = widget.get_active()
 
 	def togVideos(self, widget, data=None ):
 		self.videos = widget.get_active()
-		
+
 	def togSocial(self, widget, data=None ):
 		self.social = widget.get_active()
-		
+
 	def togIdentica(self, widget, data=None ):
 		self.identica = widget.get_active()
-		
+
 	def togTwitter(self, widget, data=None ):
 		self.twitter = widget.get_active()
-		
+
 	def togUniverso(self, widget, data=None ):
 		self.universo = widget.get_active()
-		
+
 	def togStartup(self, widget, data=None ):
 		self.startup = widget.get_active()
 
 	def togTray(self, widget, data=None ):
 		self.traybar = widget.get_active()
-		
+
 	def togSound(self, widget, data=None ):
 		self.sound = widget.get_active()
 
 	def notify(self, text):
 		if self.sound == True:
 			pygame.init()
-			pygame.mixer.music.load('/usr/share/sounds/trss-pop.ogg')
+			pygame.mixer.music.load('/usr/lib/tuquito/trss/pop.ogg')
 			pygame.mixer.music.play()
 		n = pynotify.Notification('Tuquito RSS', text, '/usr/lib/tuquito/trss/trss.png')
 		n.show()

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
- Tuquito RSS 1.2
+ Tuquito RSS 1.3-2
  Copyright (C) 2010
  Author: Mario Colque <mario@tuquito.org.ar>
  Tuquito Team! - www.tuquito.org.ar
@@ -20,9 +20,10 @@
 """
 
 import ConfigParser, feedparser
-import gtk, pygame, pynotify
-import os, time, webbrowser, gettext
-import socket
+import gtk, pynotify
+import os, time, sys
+import webbrowser, gettext
+import socket, threading
 socket.setdefaulttimeout(10)
 from urllib2 import urlopen
 
@@ -31,208 +32,178 @@ gettext.install('trss', '/usr/share/tuquito/locale')
 
 # Inicia Notificaciones
 if not pynotify.init ('TRSS-Notify'):
-	exit(1)
+	sys.exit(1)
 
-#-Variables
+# Variables
 home = os.environ['HOME']
 icon = ['/usr/lib/tuquito/trss/trss-off.png', '/usr/lib/tuquito/trss/trss.png']
-default_sound = '/usr/share/sounds/trss-pop.ogg'
-home_dir = home + '/.trss/'
-configfile = home_dir + 'config'
-flag = False
+default_sound = '/usr/lib/tuquito/trss/pop.ogg'
+home_dir = os.path.join(home, '.tuquito/trss')
+configfile = os.path.join(home_dir, 'config')
+showWindow = False
+force_reload = False
 flagC = False
-flagS = True #flag de sonido
 flagB = True #flag de crear botonera
+proxy = None
 
-class Trss:
-	def hideWindow(self, widget, data=None):
-		global flag
-		flag = False
-		self.window.hide()
-		return True
+gtk.gdk.threads_init()
 
-	def showWeb(self, widget, link=None):
-		global browser
-		b = webbrowser.get(browser)
-		b.open(link)
-
-	def showList(self, data=None):
-		global flagC
-		if flagC == True:
-			self.window.show_all()
-
-	def insertLink(self, web, title, link):
-		global flagB
-		text = web + ' | ' + title
-		if len(text) > 65:
-			text = text[:65] + '... '
-		if flagB:
-			self.botonera1 = gtk.VBox(False, 0)
-			self.botonera.pack_end(self.botonera1)
-			flagB = False
-		self.button = gtk.Button(text)
-		self.button.connect('clicked', self.showWeb, link)
-		self.botonera1.pack_end(self.button)
-
-	def clean(self, widget, data=None):
-		global flagB
-		flagB = True
-		self.botonera1.destroy()
-		self.hideWindow(self)
-
-	# Menu
-	def setTooltip(self, text):
-		self.staticon.set_tooltip(text)
-
-	def setBlinking(self, data):
-		self.staticon.set_blinking(data)
-
-	def setIcon(self, error):
-		if error == False:
-			self.staticon.set_from_file(icon[0])
-		else:
-			self.staticon.set_from_file(icon[1])
-
-	def activate(self, widget, data=None):
-		global flag, flagC
-		self.setBlinking(False)
-		self.setTooltip(_('Conectado'))
-		if flag == False:
-			self.showList()
-			flag = True
-		else:
-			self.window.hide()
-			flag = False
-		if flagC == False:
-			notify('Tuquito RSS', _('No hay eventos nuevos'))
-
-	def submenu(self, widget, button, time, data=None):
-		if button == 3:
-			if data:
-				data.show_all()
-				data.popup(None, None, None, 3, time)
-		pass
-
-	def openURL(self, widget, data=None):
-		global browser
-		b = webbrowser.get(browser)
-		b.open(data)
-
-	def refresh(self, widget):
-		global wait
-		tm.tempor = int(100 * 60 * wait)
-
-	def addFont(self,widget,data=None):
-		os.system('/usr/lib/tuquito/trss/trss-fonts.py &')
-
-	def showPref(self, widget, data=None):
-		os.system('/usr/lib/tuquito/trss/trss-pref.py &')
-
-	def about(self, widget, data=None):
-		os.system('/usr/lib/tuquito/trss/trss-about.py &')
-
-	def __init__(self):
-		global traybar
-		self.glade = gtk.Builder()
-		self.glade.add_from_file('/usr/lib/tuquito/trss/trss.glade')
+class Trss(threading.Thread):
+	def __init__(self, glade):
+		threading.Thread.__init__(self)
+		self.glade = glade
 		self.window = self.glade.get_object('trss')
 		self.staticon = self.glade.get_object('statusicon')
-		self.menu = self.glade.get_object('menu')
-		self.botonera = self.glade.get_object('botonera')
-		self.glade.connect_signals(self)
 
-		menuItem=gtk.ImageMenuItem(gtk.STOCK_REDO)
-		menuItem.get_children()[0].set_label(_('Ir a Blog Tuquito'))
-		menuItem.connect('activate', self.openURL, 'http://blog.tuquito.org.ar')
-		self.menu.append(menuItem)
+	def readMem(self, fon):
+		self.path = os.path.join(home_dir, fon)
+		try:
+			f = open(self.path, 'r')
+			g = f.readlines()
+			f.close()
+			self.mem = str(g[0].strip())
+		except:
+			self.mem = 0
+	def checkConnection(self):
+		gtk.gdk.threads_enter()
+		self.staticon.set_tooltip(_('Checking the connection to the Internet...'))
+		gtk.gdk.threads_leave()
+		try:
+			url = urlopen('http://google.com', None, proxy)
+			url.read()
+			url.close()
+		except Exception, detail:
+			if os.system('ping http://google.com -c1 -q'):
+				setIcon(False)
+				gtk.gdk.threads_enter()
+				self.staticon.set_tooltip(_('Could not connect to the Internet'))
+				gtk.gdk.threads_leave()
+				autoRefresh = AutomaticRefreshThread(self.glade, False)
+				autoRefresh.start()
+				return False
+		else:
+			gtk.gdk.threads_enter()
+			setIcon(True)
+			self.staticon.set_tooltip(_('Connected'))
+			gtk.gdk.threads_leave()
+			return True
 
-		menuItem=gtk.ImageMenuItem(gtk.STOCK_REDO)
-		menuItem.get_children()[0].set_label(_('Ir a Foros Tuquito'))
-		menuItem.connect('activate', self.openURL, 'http://foros.tuquito.org.ar')
-		self.menu.append(menuItem)
+	def conect(self, web, font):
+		try:
+			gtk.gdk.threads_enter()
+			self.staticon.set_tooltip(_('Looking for news on %s...') % font)
+			gtk.gdk.threads_leave()
+			urlopen(web, None, proxy)
+			self.info = feedparser.parse(web)
+			self.conec = True
+		except:
+			self.conec = False
 
-		menuItem=gtk.ImageMenuItem(gtk.STOCK_REDO)
-		menuItem.get_children()[0].set_label(_('Ir a Tuquito Videos'))
-		menuItem.connect('activate', self.openURL, 'http://videos.tuquito.org.ar')
-		self.menu.append(menuItem)
+	def run(self):
+		global showWindow, flagC
+		if self.checkConnection():
+			for url in urls:
+				fon, web = url
+				print fon
+				self.conect(web, fon)
+				if self.conec:
+					cant = 0
+					self.readMem(fon)
+					numEntries = len(self.info.entries)
 
-		menuItem=gtk.ImageMenuItem(gtk.STOCK_REDO)
-		menuItem.get_children()[0].set_label(_('Ir a Tuquito Social'))
-		menuItem.connect('activate', self.openURL, 'http://tuquito.ning.com')
-		self.menu.append(menuItem)
+					try:
+						last = str(self.info.entries[0].link)
+					except IndexError:
+						break
 
-		menuItem=gtk.ImageMenuItem(gtk.STOCK_REDO)
-		menuItem.get_children()[0].set_label(_('Ir a Universo Tuquito'))
-		menuItem.connect('activate', self.openURL, 'http://universo.tuquito.org.ar')
-		self.menu.append(menuItem)
+					if last != self.mem:
+						f = open(self.path, 'w')
+						f.write(last)
+						f.close()
 
-		menuItem=gtk.ImageMenuItem(gtk.STOCK_REDO)
-		menuItem.get_children()[0].set_label(_('Ir a Twitter Tuquito'))
-		menuItem.connect('activate', self.openURL, 'http://twitter.com/tuquitolinux')
-		self.menu.append(menuItem)
+					if fon == _('Social Tuquito'):
+						linkHome = 'http://social.tuquito.org.ar'
+					elif fon == _('Tuquito Blog'):
+						linkHome = 'http://blog.tuquito.org.ar'
+					elif fon == _('Tuquito Forums'):
+						linkHome = 'http://foros.tuquito.org.ar'
+					elif fon == _('Tuquito Videos'):
+						linkHome = 'http://videos.tuquito.org.ar'
+					elif fon == _('Tuquito Twitter'):
+						linkHome = 'http://twitter.com/tuquitolinux'
+					elif fon == _('Tuquito Identi.ca'):
+						linkHome = 'http://identi.ca/tuquito'
+					elif fon == _('Tuquito Universe'):
+						linkHome = 'http://universo.tuquito.org.ar'
+					else:
+						linkHome = self.info.feed.link
 
-		menuItem=gtk.ImageMenuItem(gtk.STOCK_REDO)
-		menuItem.get_children()[0].set_label(_('Ir a Identi.ca Tuquito'))
-		menuItem.connect('activate', self.openURL, 'http://identi.ca/tuquito')
-		self.menu.append(menuItem)
+					if self.mem == 0:
+						gtk.gdk.threads_enter()
+						self.staticon.set_blinking(True)
+						self.staticon.set_tooltip(_('There news!'))
+						gtk.gdk.threads_leave()
+						text = _('There are %s new entries') % str(numEntries)
+						insertLink(fon, text, linkHome)
+						notify(fon, text)
+						flagC = True
+					else:
+						lasts = []
+						for entrie in self.info.entries:
+							data = []
+							title = entrie.title.encode('utf-8')
+							link = entrie.link
+							if link != self.mem:
+								data.append(title)
+								data.append(link)
+								lasts.append(data)
+								cant += 1
+							else:
+								break
+						if cant > 0:
+							if showWindow:
+								self.window.hide()
+								showWindow = False
+							flagC = True
+							gtk.gdk.threads_enter()
+							self.staticon.set_blinking(True)
+							self.staticon.set_tooltip(_('There news!'))
+							gtk.gdk.threads_leave()
+							if cant > 3:
+								text = _('There are %s new entries') % str(cant)
+								insertLink(fon, text, linkHome)
+								notify(fon, text)
+							else:
+								lasts.reverse()
+								for tit in lasts:
+									text = tit[0].encode('utf-8')
+									link = tit[1]
+									notify(fon, text)
+									insertLink(fon, text, link)
+			autoRefresh = AutomaticRefreshThread(self.glade)
+			autoRefresh.start()
+		if flagC:
+			showWindow = False
 
-		separator = gtk.SeparatorMenuItem()
-		self.menu.append(separator)
+class AutomaticRefreshThread(threading.Thread):
+	def __init__(self, glade, connectStatus=True):
+		threading.Thread.__init__(self)
+		self.glade = glade
+		self.connectStatus = connectStatus
 
-		menuItem=gtk.ImageMenuItem(gtk.STOCK_REFRESH)
-		menuItem.get_children()[0].set_label(_('Actualizar lista'))
-		menuItem.connect('activate', self.refresh)
-		self.menu.append(menuItem)
-
-		menuItem=gtk.ImageMenuItem(gtk.STOCK_ADD)
-		menuItem.get_children()[0].set_label(_('Editar fuentes RSS'))
-		menuItem.connect('activate', self.addFont)
-		self.menu.append(menuItem)
-
-		menuItem=gtk.ImageMenuItem(gtk.STOCK_PREFERENCES)
-		menuItem.get_children()[0].set_label(_('Preferencias'))
-		menuItem.connect('activate', self.showPref)
-		self.menu.append(menuItem)
-
-		separator = gtk.SeparatorMenuItem()
-		self.menu.append(separator)
-
-		menuItem = gtk.ImageMenuItem(gtk.STOCK_ABOUT)
-		menuItem.connect('activate', self.about)
-		self.menu.append(menuItem)
-
-
-		menuItem = gtk.ImageMenuItem(gtk.STOCK_QUIT)
-		menuItem.connect('activate', self.quit, self.staticon)
-		self.menu.append(menuItem)
-
-		self.setTooltip(_('Conectando...'))
-		self.setBlinking(False)
-		self.staticon.connect('activate', self.activate)
-		self.staticon.connect('popup_menu', self.submenu, self.menu)
-		self.staticon.set_visible(traybar)
-
-	def quit(self, widget, data=None):
-		if data:
-			data.set_visible = False
-		exit(0)
-
-class Tempo:
-    def get_time(self):
-	return self.tempor
-    def __init__(self):
-	global wait
-	self.timer = int(wait * 60 * 100)
-	self.tempor = self.timer - (30 * 100)
-    def run(self):
-	self.tempor += 1
-	if self.tempor > self.timer:
-		self.tempor = 0
-	time.sleep(0.01)
+	def run(self):
+		if self.connectStatus and int(wait) > 0:
+			timer = int(wait * 60)
+		else:
+			timer = 60
+		time.sleep(timer)
+		if not showWindow and not force_reload:
+			refresh = Trss(self.glade)
+			refresh.start()
 
 def notify(title, text, icon=icon[1]):
-	if flagS == True:
-		pygame.mixer.music.play()
+	if sound:
+		os.system('play ' + default_sound + ' &')
 	n = pynotify.Notification(title, text, icon)
 	n.show()
 
@@ -241,74 +212,65 @@ def initialConfig():
 		os.mkdir(home_dir)
 	config = ConfigParser.ConfigParser()
 	config.add_section("User settings")
-	config.set("User settings", "blog", 'YES')
-	config.set("User settings", "foros", 'YES')
-	config.set("User settings", "videos", 'NO')
-	config.set("User settings", "social", 'YES')
-	config.set("User settings", "twitter", 'NO')
-	config.set("User settings", "identica", 'YES')
-	config.set("User settings", "universo", 'NO')
-	config.set("User settings", "startup", 'YES')
-	config.set("User settings", "traybar", 'YES')
-	config.set("User settings", "sound", 'YES')
+	config.set("User settings", "blog", True)
+	config.set("User settings", "foros", True)
+	config.set("User settings", "videos", False)
+	config.set("User settings", "social", True)
+	config.set("User settings", "twitter", True)
+	config.set("User settings", "identica", False)
+	config.set("User settings", "universo", False)
+	config.set("User settings", "startup", True)
+	config.set("User settings", "traybar", True)
+	config.set("User settings", "sound", True)
 	config.set("User settings", "browser", 'default')
 	config.set("User settings", "wait", 5)
 	config.write(open(configfile, 'w'))
 	readConfig()
 
 def readConfig():
-	global traybar, flagS, wait, browser, urls
-	if os.path.isfile(configfile):
+	global traybar, sound, wait, browser, urls
+	if os.path.exists(configfile):
 		try:
 			config = ConfigParser.ConfigParser()
 			config.read(configfile)
 		except:
-			os.remove(configfile)
 			initialConfig()
 		else:
-			blog = config.get("User settings", "blog")
-			foros = config.get("User settings", "foros")
-			videos = config.get("User settings", "videos")
-			social = config.get("User settings", "social")
-			twitter = config.get("User settings", "twitter")
-			identica = config.get("User settings", "identica")
-			universo = config.get("User settings", "universo")
-			traybarVal = config.get("User settings", "traybar")
-			soundVal = config.get("User settings", "sound")
+			blog = config.getboolean("User settings", "blog")
+			foros = config.getboolean("User settings", "foros")
+			videos = config.getboolean("User settings", "videos")
+			social = config.getboolean("User settings", "social")
+			twitter = config.getboolean("User settings", "twitter")
+			identica = config.getboolean("User settings", "identica")
+			universo = config.getboolean("User settings", "universo")
+			traybar = config.getboolean("User settings", "traybar")
+			sound = config.getboolean("User settings", "sound")
 			browser = config.get("User settings", "browser")
-			wait = float(config.get("User settings", "wait"))
+			wait = config.getfloat("User settings", "wait")
 			urls = []
 
-			if blog == 'YES':
-				urls.append(['Blog Tuquito', 'http://blog.tuquito.org.ar/feed/'])
-			if twitter == 'YES':
-				urls.append(['Twitter Tuquito', 'http://twitter.com/statuses/user_timeline/59312277.rss'])
-			if foros == 'YES':
-				urls.append(['Foros Tuquito', 'http://foros.tuquito.org.ar/rss.php'])
-			if social == 'YES':
-				urls.append(['Tuquito Social', 'http://tuquito.ning.com/activity/log/list?fmt=rss'])
-			if videos == 'YES':
-				urls.append(['Tuquito Videos', 'http://videos.tuquito.org.ar/index.php/feed/'])
-			if identica == 'YES':
-				urls.append(['Identi.ca Tuquito', 'http://identi.ca/api/statuses/user_timeline/tuquito.atom'])
-			if universo == 'YES':
-				urls.append(['Universo Tuquito', 'http://universo.tuquito.org.ar/index.php?media=atom'])
+			if blog:
+				urls.append([_('Tuquito Blog'), 'http://blog.tuquito.org.ar/feed/'])
+			if twitter:
+				urls.append([_('Tuquito Twitter'), 'http://twitter.com/statuses/user_timeline/59312277.rss'])
+			if foros:
+				urls.append([_('Tuquito Forums'), 'http://foros.tuquito.org.ar/rss.php'])
+			if social:
+				urls.append([_('Social Tuquito'), 'http://social.tuquito.org.ar/activity/log/list?fmt=rss'])
+			if videos:
+				urls.append([_('Tuquito Videos'), 'http://videos.tuquito.org.ar/index.php/feed/'])
+			if identica:
+				urls.append([_('Tuquito Identi.ca'), 'http://identi.ca/api/statuses/user_timeline/tuquito.atom'])
+			if universo:
+				urls.append([_('Tuquito Universe'), 'http://universo.tuquito.org.ar/index.php?media=atom'])
 
 			if browser == 'default':
 				browser = None
-			if traybarVal == 'YES':
-				traybar = True
-			elif traybarVal == 'NO':
-				traybar = False
-			if soundVal == 'YES':
-				flagS = True
-			elif soundVal == 'NO':
-				flagS = False
 	else:
 		initialConfig()
 
 def readFonts():
-	user_fonts = home_dir + 'userFonts'
+	user_fonts = os.path.join(home_dir, 'userFonts')
 	if os.path.isfile(user_fonts):
 		f = open(user_fonts, 'r')
 		g = f.readlines()
@@ -319,115 +281,149 @@ def readFonts():
 			web = dat[1].strip()
 			urls.append([fon, web])
 
-def readMem(fon):
-	global path, mem, home_dir
-	path = home_dir + fon
-	try:
-		f = open(path, 'r')
-		g = f.readlines()
-		f.close()
-		mem = str(g[0].strip())
-	except:
-		mem = 0
+# Menu
+def setIcon(error):
+	if error == False:
+		staticon.set_from_file(icon[0])
+	else:
+		staticon.set_from_file(icon[1])
 
-def conect(web):
-	global conec, info
-	tab.setTooltip(_('Conectando...'))
-	try:
-		urlopen(web)
-		info = feedparser.parse(web)
-		tab.setIcon(True)
-		tab.setTooltip(_('Conectado'))
-		conec = True
-	except Exception, detail:
-		#print detail
-		tab.setIcon(False)
-		tab.setTooltip(_('Sin conexion'))
-		conec = False
+def activate(widget, data=None):
+	global showWindow, flagC
+	staticon.set_blinking(False)
+	staticon.set_tooltip(_('Connected'))
+	if not flagC:
+		notify('Tuquito RSS', _('There are no new events'))
+	if not showWindow:
+		showList()
+		showWindow = True
+	else:
+		window.hide()
+		showWindow = False
+		return True
 
-pygame.init()
-pygame.mixer.music.load(default_sound)
+def submenu(widget, button, time, data=None):
+	if button == 3:
+		if data:
+			data.show_all()
+			data.popup(None, None, None, 3, time)
+
+def openURL(widget, data=None):
+	b = webbrowser.get(browser)
+	b.open(data)
+
+def refresh(widget):
+	global force_reload
+	force_reload = True
+	refresh = Trss(glade)
+	refresh.start()
+
+def addFont(widget, data=None):
+	os.system('/usr/lib/tuquito/trss/trss-fonts.py &')
+
+def showPref(widget, data=None):
+	os.system('/usr/lib/tuquito/trss/trss-pref.py &')
+
+def about(widget, data=None):
+	os.system('/usr/lib/tuquito/trss/trss-about.py &')
+
+def showList(widget=None):
+	if flagC:
+		window.show_all()
+
+def hideWindow(widget, data=None):
+	global showWindow
+	showWindow = False
+	window.hide()
+	return True
+
+def showWeb(widget, link=None):
+	global browser
+	b = webbrowser.get(browser)
+	b.open(link)
+
+def insertLink(web, title, link):
+	global flagB, botonera1
+	text = web + ' | ' + title
+	if len(text) > 85:
+		text = text[:85] + '... '
+	if flagB:
+		botonera1 = gtk.VBox(False, 0)
+		botonera.pack_end(botonera1)
+		flagB = False
+	button = gtk.Button(text)
+	button.connect('clicked', showWeb, link)
+	button.set_alignment(0.0, 0.0)
+	botonera1.pack_end(button)
+	botonera1.show()
+
+def clean(widget, data=None):
+	global flagB, flagC
+	flagB = True
+	flagC = False
+	botonera1.destroy()
+	hideWindow(None)
+
+def quit(widget, data=None):
+	os.system('kill -9 ' + str(os.getpid()))
+
 readConfig()
 readFonts()
-tab = Trss()
-tm = Tempo()
-while True:
-	tm.run()
-	while gtk.events_pending():
-		gtk.main_iteration()
-	if  tm.get_time() == int(wait * 60 * 100):
-		for url in urls:
-			web = url[1]
-			fon = url[0]
-			conect(web)
-			if conec:
-				cant = 0
-				readMem(fon)
-				numEntries = len(info.entries)
 
-				try:
-					last = str(info.entries[0].link)
-				except IndexError:
-					break
+try:
+	arg = sys.argv[1].strip()
+except:
+	arg = False
 
-				if last != mem:
-					f = open(path, 'w')
-					f.write(last)
-					f.close()
+if arg != False:
+	if startup:
+		if arg == 'time':
+			time.sleep(wait)
+	else:
+		sys.exit(0)
 
-				if fon == 'Tuquito Social':
-					linkHome = 'http://tuquito.ning.com'
-				elif fon == 'Blog Tuquito':
-					linkHome = 'http://blog.tuquito.org.ar'
-				elif fon == 'Foros Tuquito':
-					linkHome = 'http://foros.tuquito.org.ar'
-				elif fon == 'Tuquito Videos':
-					linkHome = 'http://videos.tuquito.org.ar'
-				elif fon == 'Twitter Tuquito':
-					linkHome = 'http://twitter.com/tuquitolinux'
-				elif fon == 'Identi.ca Tuquito':
-					linkHome = 'http://identi.ca/tuquito'
-				elif fon == 'Universo Tuquito':
-					linkHome = 'http://universo.tuquito.org.ar'
-				else:
-					linkHome = info.feed.link
+try:
+	glade = gtk.Builder()
+	glade.add_from_file('/usr/lib/tuquito/trss/trss.glade')
+	window = glade.get_object('trss')
+	staticon = glade.get_object('statusicon')
+	menu = glade.get_object('menu')
+	botonera = glade.get_object('botonera')
+	window.set_title(_('Tuquito RSS'))
+	window.connect('delete_event', hideWindow)
+	glade.get_object('clean').connect('clicked', clean)
 
-				if mem == 0:
-					tab.setBlinking(True)
-					text = _('Hay ') + str(numEntries) + _(' entradas nuevas')
-					tab.setTooltip(_('Hay Novedades'))
-					tab.insertLink(fon, text, linkHome)
-					notify(fon, text)
-					flagC = True
-				else:
-					lasts = []
-					for entrie in info.entries:
-						data = []
-						title = entrie.title.encode('utf-8')
-						link = entrie.link
-						if link != mem:
-							data.append(title)
-							data.append(link)
-							lasts.append(data)
-							cant += 1
-						else:
-							break
+	menuItem=gtk.ImageMenuItem(gtk.STOCK_REFRESH)
+	menuItem.get_children()[0].set_label(_('Refresh list'))
+	menuItem.connect('activate', refresh)
+	menu.append(menuItem)
 
-					if cant > 0:
-						if flag:
-							tab.window.hide()
-							flag = False
-						flagC = True
-						tab.setBlinking(True)
-						tab.setTooltip(_('Hay Novedades'))
-						if cant > 3:
-							text = _('Hay ') + str(cant) +  _(' entradas nuevas')
-							tab.insertLink(fon, text, linkHome)
-							notify(fon, text)
-						else:
-							lasts.reverse()
-							for tit in lasts:
-								text = tit[0].encode('utf-8')
-								link = tit[1]
-								notify(fon, text)
-								tab.insertLink(fon, text, link)
+	menuItem=gtk.ImageMenuItem(gtk.STOCK_ADD)
+	menuItem.get_children()[0].set_label(_('Edit RSS feeds'))
+	menuItem.connect('activate', addFont)
+	menu.append(menuItem)
+
+	menuItem=gtk.ImageMenuItem(gtk.STOCK_PREFERENCES)
+	menuItem.connect('activate', showPref)
+	menu.append(menuItem)
+
+	menuItem = gtk.ImageMenuItem(gtk.STOCK_ABOUT)
+	menuItem.connect('activate', about)
+	menu.append(menuItem)
+
+	separator = gtk.SeparatorMenuItem()
+	menu.append(separator)
+
+	menuItem = gtk.ImageMenuItem(gtk.STOCK_QUIT)
+	menuItem.connect('activate', quit)
+	menu.append(menuItem)
+
+	staticon.connect('activate', activate)
+	staticon.connect('popup_menu', submenu, menu)
+	staticon.set_tooltip(_('Connecting...'))
+	staticon.set_visible(traybar)
+	trss = Trss(glade)
+	trss.start()
+	gtk.main()
+except:
+	sys.exit(1)
