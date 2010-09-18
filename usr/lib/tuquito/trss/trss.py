@@ -91,7 +91,7 @@ class Trss(threading.Thread):
 	def conect(self, web, font):
 		try:
 			gtk.gdk.threads_enter()
-			self.staticon.set_tooltip(_('Looking for news on %s...') % font)
+			self.staticon.set_tooltip(_('Searching news in %s...') % font)
 			gtk.gdk.threads_leave()
 			urlopen(web, None, proxy)
 			self.info = feedparser.parse(web)

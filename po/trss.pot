@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-28 18:49-0300\n"
+"POT-Creation-Date: 2010-09-18 15:05-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,153 +16,148 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: usr/lib/tuquito/trss/trss.py:99 usr/lib/tuquito/trss/trss.py:340
+#: usr/lib/tuquito/trss/trss.py:69
+msgid "Checking the connection to the Internet..."
+msgstr ""
+
+#: usr/lib/tuquito/trss/trss.py:79
+msgid "Could not connect to the Internet"
+msgstr ""
+
+#: usr/lib/tuquito/trss/trss.py:87 usr/lib/tuquito/trss/trss.py:294
 msgid "Connected"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:107
-msgid "There are no new events"
+#: usr/lib/tuquito/trss/trss.py:94
+#, python-format
+msgid "Searching news in %s..."
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:145
-msgid "Go to Blog Tuquito"
+#: usr/lib/tuquito/trss/trss.py:124 usr/lib/tuquito/trss/trss.py:259
+#: usr/lib/tuquito/trss/trss-pref.py:226
+msgid "Social Tuquito"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:150
-msgid "Go to Forums Tuquito"
+#: usr/lib/tuquito/trss/trss.py:126 usr/lib/tuquito/trss/trss.py:253
+#: usr/lib/tuquito/trss/trss-pref.py:220
+msgid "Tuquito Blog"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:155
-msgid "Go to Tuquito Videos"
+#: usr/lib/tuquito/trss/trss.py:128 usr/lib/tuquito/trss/trss.py:257
+#: usr/lib/tuquito/trss/trss-pref.py:222
+msgid "Tuquito Forums"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:160
-msgid "Go to Tuquito Social"
+#: usr/lib/tuquito/trss/trss.py:130 usr/lib/tuquito/trss/trss.py:261
+#: usr/lib/tuquito/trss/trss-pref.py:224
+msgid "Tuquito Videos"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:165
-msgid "Go to Tuquito Universe"
+#: usr/lib/tuquito/trss/trss.py:132 usr/lib/tuquito/trss/trss.py:255
+#: usr/lib/tuquito/trss/trss-pref.py:230
+msgid "Tuquito Twitter"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:170
-msgid "Go to Twitter Tuquito"
+#: usr/lib/tuquito/trss/trss.py:134 usr/lib/tuquito/trss/trss.py:263
+#: usr/lib/tuquito/trss/trss-pref.py:228
+msgid "Tuquito Identi.ca"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:175
-msgid "Go to Identi.ca Tuquito"
+#: usr/lib/tuquito/trss/trss.py:136 usr/lib/tuquito/trss/trss.py:265
+msgid "Tuquito Universe"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:183
-msgid "Refresh list"
+#: usr/lib/tuquito/trss/trss.py:144 usr/lib/tuquito/trss/trss.py:170
+msgid "There news!"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:188
-msgid "Edit RSS feeds"
-msgstr ""
-
-#: usr/lib/tuquito/trss/trss.py:193 usr/lib/tuquito/trss/trss-pref.py:311
-msgid "Preferences"
-msgstr ""
-
-#: usr/lib/tuquito/trss/trss.py:209 usr/lib/tuquito/trss/trss.py:335
-msgid "Connecting..."
-msgstr ""
-
-#: usr/lib/tuquito/trss/trss.py:345
-msgid "Offline"
-msgstr ""
-
-#: usr/lib/tuquito/trss/trss.py:397 usr/lib/tuquito/trss/trss.py:424
+#: usr/lib/tuquito/trss/trss.py:146 usr/lib/tuquito/trss/trss.py:173
 #, python-format
 msgid "There are %s new entries"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:398 usr/lib/tuquito/trss/trss.py:422
-msgid "There News"
+#: usr/lib/tuquito/trss/trss.py:296
+msgid "There are no new events"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-fonts.py:37
+#: usr/lib/tuquito/trss/trss.py:392
+msgid "Tuquito RSS"
+msgstr ""
+
+#: usr/lib/tuquito/trss/trss.py:397
+msgid "Refresh list"
+msgstr ""
+
+#: usr/lib/tuquito/trss/trss.py:402
+msgid "Edit RSS feeds"
+msgstr ""
+
+#: usr/lib/tuquito/trss/trss.py:423
+msgid "Connecting..."
+msgstr ""
+
+#: usr/lib/tuquito/trss/trss-fonts.py:36
 msgid "RSS Tuquito Sources"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-fonts.py:40
+#: usr/lib/tuquito/trss/trss-fonts.py:39
 msgid "New Sources"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-fonts.py:67
+#: usr/lib/tuquito/trss/trss-fonts.py:65
 msgid "Add source"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-fonts.py:68
+#: usr/lib/tuquito/trss/trss-fonts.py:66
 msgid "Name: (eg Tuquito Forums)"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-fonts.py:69
+#: usr/lib/tuquito/trss/trss-fonts.py:67
 msgid "Source URL:"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-pref.py:124
+#: usr/lib/tuquito/trss/trss-pref.py:77
 msgid ""
 "Your settings are saved correctly.\n"
 "You must restart your session to ensure that changes are made"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-pref.py:312
+#: usr/lib/tuquito/trss/trss-pref.py:213
+msgid "Preferences"
+msgstr ""
+
+#: usr/lib/tuquito/trss/trss-pref.py:214
 msgid "Places to go"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-pref.py:313
+#: usr/lib/tuquito/trss/trss-pref.py:215
 msgid "Behavior"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-pref.py:314
+#: usr/lib/tuquito/trss/trss-pref.py:216
 msgid "Refresh"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-pref.py:315
+#: usr/lib/tuquito/trss/trss-pref.py:217
 msgid "Select browser"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-pref.py:318
-msgid "Blog Tuquito"
-msgstr ""
-
-#: usr/lib/tuquito/trss/trss-pref.py:320
-msgid "Foros Tuquito"
-msgstr ""
-
-#: usr/lib/tuquito/trss/trss-pref.py:322
-msgid "Videos Tuquito"
-msgstr ""
-
-#: usr/lib/tuquito/trss/trss-pref.py:324
-msgid "Tuquito Social"
-msgstr ""
-
-#: usr/lib/tuquito/trss/trss-pref.py:326
-msgid "Identi.ca Tuquito"
-msgstr ""
-
-#: usr/lib/tuquito/trss/trss-pref.py:328
-msgid "Twitter Tuquito"
-msgstr ""
-
-#: usr/lib/tuquito/trss/trss-pref.py:330
+#: usr/lib/tuquito/trss/trss-pref.py:232
 msgid "Only Tuquito Universe (disable other)"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-pref.py:332
+#: usr/lib/tuquito/trss/trss-pref.py:234
 msgid "Automatic start"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-pref.py:334
+#: usr/lib/tuquito/trss/trss-pref.py:236
 msgid "Show icon on the panel"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-pref.py:336
+#: usr/lib/tuquito/trss/trss-pref.py:238
 msgid "Play sound alert"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss-pref.py:338
+#: usr/lib/tuquito/trss/trss-pref.py:240
 msgid "(minutes)"
 msgstr ""
