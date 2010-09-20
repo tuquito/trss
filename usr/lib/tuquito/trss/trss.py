@@ -100,7 +100,7 @@ class Trss(threading.Thread):
 			self.conec = False
 
 	def run(self):
-		global showWindow, flagC
+		global showWindow, flagCm force_reload
 		if self.checkConnection():
 			for url in urls:
 				fon, web = url
@@ -184,6 +184,7 @@ class Trss(threading.Thread):
 							gtk.gdk.threads_enter()
 							self.staticon.set_tooltip(_('Connected'))
 							gtk.gdk.threads_leave()
+			force_reload = False
 			autoRefresh = AutomaticRefreshThread(self.glade)
 			autoRefresh.start()
 		if flagC:

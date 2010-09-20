@@ -20,7 +20,7 @@
 """
 
 import ConfigParser
-import gtk, pygame
+import gtk
 import os, pynotify, gettext, gobject
 
 # i18n
@@ -278,9 +278,7 @@ class Preferencias:
 
 	def notify(self, text):
 		if self.sound == True:
-			pygame.init()
-			pygame.mixer.music.load('/usr/lib/tuquito/trss/pop.ogg')
-			pygame.mixer.music.play()
+			os.system('play /usr/lib/tuquito/trss/pop.ogg')
 		n = pynotify.Notification('Tuquito RSS', text, '/usr/lib/tuquito/trss/trss.png')
 		n.show()
 
