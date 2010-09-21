@@ -100,7 +100,7 @@ class Trss(threading.Thread):
 			self.conec = False
 
 	def run(self):
-		global showWindow, flagCm force_reload
+		global showWindow, flagC, force_reload
 		if self.checkConnection():
 			for url in urls:
 				fon, web = url
@@ -350,8 +350,8 @@ def showWeb(widget, link=None):
 def insertLink(web, title, link):
 	global flagB, botonera1
 	text = web + ' | ' + title
-	if len(text) > 85:
-		text = text[:85] + '... '
+	if len(text) > 75:
+		text = text[:75] + '... '
 	if flagB:
 		botonera1 = gtk.VBox(False, 0)
 		botonera.pack_end(botonera1)
