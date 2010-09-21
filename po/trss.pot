@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-18 15:35-0300\n"
+"POT-Creation-Date: 2010-09-21 12:42-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgid "Could not connect to the Internet"
 msgstr ""
 
 #: usr/lib/tuquito/trss/trss.py:87 usr/lib/tuquito/trss/trss.py:185
-#: usr/lib/tuquito/trss/trss.py:298
+#: usr/lib/tuquito/trss/trss.py:299
 msgid "Connected"
 msgstr ""
 
@@ -34,37 +34,37 @@ msgstr ""
 msgid "Searching news in %s..."
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:124 usr/lib/tuquito/trss/trss.py:263
+#: usr/lib/tuquito/trss/trss.py:124 usr/lib/tuquito/trss/trss.py:264
 #: usr/lib/tuquito/trss/trss-pref.py:226
 msgid "Social Tuquito"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:126 usr/lib/tuquito/trss/trss.py:257
+#: usr/lib/tuquito/trss/trss.py:126 usr/lib/tuquito/trss/trss.py:258
 #: usr/lib/tuquito/trss/trss-pref.py:220
 msgid "Tuquito Blog"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:128 usr/lib/tuquito/trss/trss.py:261
+#: usr/lib/tuquito/trss/trss.py:128 usr/lib/tuquito/trss/trss.py:262
 #: usr/lib/tuquito/trss/trss-pref.py:222
 msgid "Tuquito Forums"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:130 usr/lib/tuquito/trss/trss.py:265
+#: usr/lib/tuquito/trss/trss.py:130 usr/lib/tuquito/trss/trss.py:266
 #: usr/lib/tuquito/trss/trss-pref.py:224
 msgid "Tuquito Videos"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:132 usr/lib/tuquito/trss/trss.py:259
+#: usr/lib/tuquito/trss/trss.py:132 usr/lib/tuquito/trss/trss.py:260
 #: usr/lib/tuquito/trss/trss-pref.py:230
 msgid "Tuquito Twitter"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:134 usr/lib/tuquito/trss/trss.py:267
+#: usr/lib/tuquito/trss/trss.py:134 usr/lib/tuquito/trss/trss.py:268
 #: usr/lib/tuquito/trss/trss-pref.py:228
 msgid "Tuquito Identi.ca"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:136 usr/lib/tuquito/trss/trss.py:269
+#: usr/lib/tuquito/trss/trss.py:136 usr/lib/tuquito/trss/trss.py:270
 msgid "Tuquito Universe"
 msgstr ""
 
@@ -77,23 +77,23 @@ msgstr ""
 msgid "There are %s new entries"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:300
+#: usr/lib/tuquito/trss/trss.py:301
 msgid "There are no new events"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:396
+#: usr/lib/tuquito/trss/trss.py:397
 msgid "Tuquito RSS"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:401
+#: usr/lib/tuquito/trss/trss.py:402
 msgid "Refresh list"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:406
+#: usr/lib/tuquito/trss/trss.py:407
 msgid "Edit RSS feeds"
 msgstr ""
 
-#: usr/lib/tuquito/trss/trss.py:427
+#: usr/lib/tuquito/trss/trss.py:428
 msgid "Connecting..."
 msgstr ""
 
