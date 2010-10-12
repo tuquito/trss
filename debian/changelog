@@ -1,3 +1,9 @@
+trss (1.3-8) maverick; urgency=low
+
+  * launcher fixed
+
+ -- Mario Colque <mario@tuquito.org.ar>  Tue, 12 Oct 2010 20:34:53 -0300
+
 trss (1.3-7) maverick; urgency=low
 
   * mejoras varias
