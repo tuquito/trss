@@ -1,3 +1,2 @@
 #!/bin/sh
-/usr/lib/tuquito/trss/trss.py &
-exit 0
+/usr/lib/tuquito/trss/trss.py
