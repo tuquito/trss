@@ -214,7 +214,7 @@ def notify(title, text, icon=icon[1]):
 
 def initialConfig():
 	if not os.path.exists(home_dir):
-		os.mkdir(home_dir)
+		os.system('mkdir -p ' + home_dir)
 	config = ConfigParser.ConfigParser()
 	config.add_section("User settings")
 	config.set("User settings", "blog", True)

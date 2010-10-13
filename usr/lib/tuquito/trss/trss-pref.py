@@ -38,7 +38,7 @@ class Preferencias:
 	def verificaStart(self):
 		dr = home + '/.config/autostart/'
 		if not os.path.exists(dr):
-			os.mkdir(dr)
+			os.system('mkdir -p ' + dr)
 		configFile = dr + 'trss.desktop'
 		line = []
 		f = open(configFile, 'w')
@@ -79,7 +79,7 @@ class Preferencias:
 
 	def initialConfig(self):
 		if not os.path.exists(self.path):
-			os.mkdir(self.path)
+			os.system('mkdir -p ' + self.path)
 		config = ConfigParser.ConfigParser()
 		config.add_section("User settings")
 		config.set("User settings", "blog", True)
