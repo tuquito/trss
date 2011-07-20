@@ -11,4 +11,3 @@ Architecture: all
 Depends: python-feedparser (>= 4.0), python, python-notify, sox
 Description: Lector de RSS de Tuquito
  Tuquito RSS es un notificador de eventos en los sitios oficiales de Tuquito, pequeño y ligero para el Escritorio de Tuquito. Totalmente configurable y con posibilidad de agregar nuevas fuentes RSS.
- * Tuquito Team! - 2010

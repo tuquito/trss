@@ -73,7 +73,7 @@ class Trss(threading.Thread):
 			url.read()
 			url.close()
 		except Exception, detail:
-			if os.system('ping http://google.com -c1 -q'):
+			if os.system('ping google.com -c1 -q'):
 				setIcon(False)
 				gtk.gdk.threads_enter()
 				self.staticon.set_tooltip(_('Could not connect to the Internet'))
