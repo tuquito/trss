@@ -25,7 +25,7 @@ import os, time, sys
 import webbrowser, gettext
 import socket, threading
 socket.setdefaulttimeout(10)
-from urllib2 import urlopen
+from urllib2 import Request, urlopen, URLError
 
 # i18n
 gettext.install('trss', '/usr/share/tuquito/locale')
@@ -45,6 +45,8 @@ force_reload = False
 flagC = False
 flagB = True #flag de crear botonera
 proxy = None
+user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.218 Safari/535.1'
+headers = { 'User-Agent' : user_agent }
 
 gtk.gdk.threads_init()
 
@@ -89,14 +91,18 @@ class Trss(threading.Thread):
 			return True
 
 	def conect(self, web, font):
+		req = Request(web, '', headers)
 		try:
 			gtk.gdk.threads_enter()
 			self.staticon.set_tooltip(_('Searching news in %s...') % font)
 			gtk.gdk.threads_leave()
-			urlopen(web, None, proxy)
-			self.info = feedparser.parse(web)
-			self.conec = True
-		except:
+			response = urlopen(req)
+			if response.read() != '':
+				self.info = feedparser.parse(web)
+				self.conec = True
+			else:
+				self.conec = False
+		except URLError, e:
 			self.conec = False
 
 	def run(self):
