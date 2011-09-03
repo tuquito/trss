@@ -1,3 +1,9 @@
+trss (1.3-14) natty; urgency=low
+
+  * new user-agent
+
+ -- Mario Colque <mario@tuquito.org.ar>  Sat, 03 Sep 2011 16:47:17 -0300
+
 trss (1.3-13) natty; urgency=low
 
   * Pampa branch
