@@ -1,2 +1,5 @@
 #!/bin/bash
 xgettext --language=Python --keyword=_ --output=po/trss.pot usr/lib/tuquito/trss/trss.py usr/lib/tuquito/trss/trss-fonts.py usr/lib/tuquito/trss/trss-pref.py
+cd po
+msgmerge es.po trss.pot -o es.po
+msgmerge pt.po trss.pot -o pt.po

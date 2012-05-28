@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
- Tuquito RSS 1.3
+ Tuquito RSS
  Copyright (C) 2010
  Author: Mario Colque <mario@tuquito.org.ar>
  Tuquito Team! - www.tuquito.org.ar
@@ -26,6 +26,7 @@ import webbrowser, gettext
 import socket, threading
 socket.setdefaulttimeout(10)
 from urllib2 import Request, urlopen, URLError
+from random import randint
 
 # i18n
 gettext.install('trss', '/usr/share/tuquito/locale')
@@ -45,8 +46,6 @@ force_reload = False
 flagC = False
 flagB = True #flag de crear botonera
 proxy = None
-user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.218 Safari/535.1'
-headers = { 'User-Agent' : user_agent }
 
 gtk.gdk.threads_init()
 
@@ -91,6 +90,9 @@ class Trss(threading.Thread):
 			return True
 
 	def conect(self, web, font):
+		random_version = randint(100, 999)
+		user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.%d.52 Safari/536.5' %  random_version
+		headers = { 'User-Agent' : user_agent }
 		req = Request(web, '', headers)
 		try:
 			gtk.gdk.threads_enter()
@@ -110,7 +112,7 @@ class Trss(threading.Thread):
 		if self.checkConnection():
 			for url in urls:
 				fon, web = url
-				print fon
+				# print fon
 				self.conect(web, fon)
 				if self.conec:
 					cant = 0
@@ -224,7 +226,7 @@ def initialConfig():
 	config = ConfigParser.ConfigParser()
 	config.add_section("User settings")
 	config.set("User settings", "blog", True)
-	config.set("User settings", "foros", True)
+	config.set("User settings", "foros", False)
 	config.set("User settings", "videos", False)
 	config.set("User settings", "social", True)
 	config.set("User settings", "twitter", True)
